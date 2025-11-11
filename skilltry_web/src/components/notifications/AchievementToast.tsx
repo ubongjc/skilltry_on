@@ -28,19 +28,23 @@ export default function AchievementToast({
   const [isLeaving, setIsLeaving] = useState(false);
 
   useEffect(() => {
-    // Entrance animation
-    setTimeout(() => setIsVisible(true), 10);
+    // Entrance animation - store timer to clean up
+    const entranceTimer = setTimeout(() => setIsVisible(true), 10);
 
     // Auto close
-    const timer = setTimeout(() => {
+    const autoCloseTimer = setTimeout(() => {
       handleClose();
     }, autoCloseDuration);
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(entranceTimer);
+      clearTimeout(autoCloseTimer);
+    };
   }, [autoCloseDuration]);
 
   const handleClose = () => {
     setIsLeaving(true);
+    // Note: This timer is intentional for animation and will complete quickly
     setTimeout(() => {
       onClose();
     }, 300);
@@ -138,17 +142,22 @@ export function LevelUpToast({
   const [isLeaving, setIsLeaving] = useState(false);
 
   useEffect(() => {
-    setTimeout(() => setIsVisible(true), 10);
+    // Store both timers for proper cleanup
+    const entranceTimer = setTimeout(() => setIsVisible(true), 10);
 
-    const timer = setTimeout(() => {
+    const autoCloseTimer = setTimeout(() => {
       handleClose();
     }, autoCloseDuration);
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(entranceTimer);
+      clearTimeout(autoCloseTimer);
+    };
   }, [autoCloseDuration]);
 
   const handleClose = () => {
     setIsLeaving(true);
+    // Note: This timer is intentional for animation and will complete quickly
     setTimeout(() => {
       onClose();
     }, 300);

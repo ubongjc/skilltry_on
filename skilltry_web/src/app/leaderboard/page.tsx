@@ -95,19 +95,19 @@ export default async function LeaderboardPage() {
       : null,
   ]);
 
-  // Calculate user's ranks
+  // Calculate user's ranks - properly handle "not in top 100" case
   let userRanks = null;
   if (currentUserRank && user) {
-    const xpRank = topByXP.findIndex((u) => u.id === user.id) + 1;
-    const pointsRank = topByPoints.findIndex((u) => u.id === user.id) + 1;
-    const simulationsRank = topBySimulations.findIndex((u) => u.id === user.id) + 1;
-    const streakRank = topByStreak.findIndex((u) => u.id === user.id) + 1;
+    const xpIndex = topByXP.findIndex((u) => u.id === user.id);
+    const pointsIndex = topByPoints.findIndex((u) => u.id === user.id);
+    const simulationsIndex = topBySimulations.findIndex((u) => u.id === user.id);
+    const streakIndex = topByStreak.findIndex((u) => u.id === user.id);
 
     userRanks = {
-      xp: xpRank || null,
-      points: pointsRank || null,
-      simulations: simulationsRank || null,
-      streak: streakRank || null,
+      xp: xpIndex >= 0 ? xpIndex + 1 : null,
+      points: pointsIndex >= 0 ? pointsIndex + 1 : null,
+      simulations: simulationsIndex >= 0 ? simulationsIndex + 1 : null,
+      streak: streakIndex >= 0 ? streakIndex + 1 : null,
     };
   }
 

@@ -72,6 +72,28 @@ export default function SimulationPlayer({
 
   const currentStep = steps[currentStepIndex];
 
+  // Guard against invalid step index
+  if (!currentStep || !steps.length) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            Invalid Simulation
+          </h2>
+          <p className="text-gray-600 mb-4">
+            This simulation has no steps configured.
+          </p>
+          <button
+            onClick={() => router.push('/simulations')}
+            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+            Browse Simulations
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   // Timer effect
   useEffect(() => {
     const interval = setInterval(() => {
@@ -81,15 +103,6 @@ export default function SimulationPlayer({
     return () => clearInterval(interval);
   }, [startTime]);
 
-  // Auto-save progress every 30 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      saveProgress();
-    }, 30000);
-
-    return () => clearInterval(interval);
-  }, [responses, currentStepIndex]);
-
   // Format time display
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -97,8 +110,8 @@ export default function SimulationPlayer({
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  // Save progress to backend
-  const saveProgress = async () => {
+  // Save progress to backend - wrapped in useCallback to prevent re-creation
+  const saveProgress = useCallback(async () => {
     try {
       await fetch('/api/attempts/progress', {
         method: 'POST',
@@ -113,7 +126,16 @@ export default function SimulationPlayer({
     } catch (error) {
       console.error('Failed to save progress:', error);
     }
-  };
+  }, [attemptId, responses, currentStepIndex, elapsedTime]);
+
+  // Auto-save progress every 30 seconds with proper dependencies
+  useEffect(() => {
+    const interval = setInterval(() => {
+      saveProgress();
+    }, 30000);
+
+    return () => clearInterval(interval);
+  }, [saveProgress]);
 
   // Handle text response
   const handleTextChange = (value: string) => {
@@ -175,8 +197,9 @@ export default function SimulationPlayer({
         formData.append('attemptId', attemptId);
         formData.append('fileName', file.name);
         formData.append('contentType', file.type);
-        formData.append('iv', Buffer.from(iv).toString('base64'));
-        formData.append('key', Buffer.from(key).toString('base64'));
+        // Convert Uint8Array to base64 using browser-compatible method
+        formData.append('iv', btoa(String.fromCharCode(...iv)));
+        formData.append('key', btoa(String.fromCharCode(...key)));
 
         const response = await fetch('/api/upload', {
           method: 'POST',
@@ -189,7 +212,8 @@ export default function SimulationPlayer({
 
         const data = await response.json();
         uploadedKeys.push(data.fileKey);
-        setUploadedFiles(prev => [...prev, file]);
+        // Use functional update to prevent race conditions
+        setUploadedFiles((prev) => [...prev, file]);
       }
 
       setCurrentResponse({

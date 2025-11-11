@@ -135,18 +135,18 @@ export default function ProfileClient({
               {/* XP Progress */}
               <div className="max-w-md">
                 <div className="flex justify-between text-sm mb-2">
-                  <span>XP: {stats.xpProgress.xpInCurrentLevel}</span>
-                  <span>{stats.xpProgress.xpNeededForNextLevel}</span>
+                  <span>XP: {stats.xpProgress?.xpInCurrentLevel ?? 0}</span>
+                  <span>{stats.xpProgress?.xpNeededForNextLevel ?? 0}</span>
                 </div>
                 <div className="w-full bg-white/20 rounded-full h-4">
                   <div
                     className="bg-gradient-to-r from-yellow-400 to-yellow-600 h-4 rounded-full transition-all duration-500"
-                    style={{ width: `${stats.xpProgress.progress}%` }}
+                    style={{ width: `${stats.xpProgress?.progress ?? 0}%` }}
                   />
                 </div>
                 <p className="text-sm text-blue-100 mt-2">
-                  {Math.floor(stats.xpProgress.progress)}% to Level{' '}
-                  {stats.xpProgress.currentLevel + 1}
+                  {Math.floor(stats.xpProgress?.progress ?? 0)}% to Level{' '}
+                  {(stats.xpProgress?.currentLevel ?? 0) + 1}
                 </p>
               </div>
             </div>
@@ -242,7 +242,9 @@ export default function ProfileClient({
                             +{userAchievement.achievement.pointsReward} pts
                           </span>
                           <span className="text-gray-500">
-                            {new Date(userAchievement.completedAt!).toLocaleDateString()}
+                            {userAchievement.completedAt
+                              ? new Date(userAchievement.completedAt).toLocaleDateString()
+                              : 'N/A'}
                           </span>
                         </div>
                       </div>
@@ -290,7 +292,9 @@ export default function ProfileClient({
                         <span>{attempt.simulation.difficulty}</span>
                         <span>•</span>
                         <span>
-                          {new Date(attempt.completedAt!).toLocaleDateString()}
+                          {attempt.completedAt
+                            ? new Date(attempt.completedAt).toLocaleDateString()
+                            : 'N/A'}
                         </span>
                         {attempt.xpEarned > 0 && (
                           <>

@@ -164,7 +164,9 @@ export default async function AttemptResultsPage({ params }: PageProps) {
                   {attempt.simulation.title}
                 </h1>
                 <p className="text-white/90">
-                  Completed on {new Date(attempt.completedAt!).toLocaleDateString()}
+                  {attempt.completedAt
+                    ? `Completed on ${new Date(attempt.completedAt).toLocaleDateString()}`
+                    : 'In Progress'}
                 </p>
               </div>
               <div className="text-center">

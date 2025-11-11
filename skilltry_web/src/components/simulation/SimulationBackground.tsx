@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 
 interface SimulationBackgroundProps {
   sector: string;
@@ -77,6 +77,20 @@ export default function SimulationBackground({
 
   const config = backgrounds[sector as keyof typeof backgrounds] || backgrounds.Default;
 
+  // Memoize particle styles to prevent memory leaks and unnecessary re-renders
+  const particles = useMemo(
+    () =>
+      Array.from({ length: 20 }).map(() => ({
+        width: Math.random() * 4 + 2,
+        height: Math.random() * 4 + 2,
+        left: Math.random() * 100,
+        top: Math.random() * 100,
+        duration: Math.random() * 10 + 10,
+        delay: Math.random() * 5,
+      })),
+    [] // Empty dependency array - generate particles only once
+  );
+
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
       {/* Base Gradient */}
@@ -87,19 +101,19 @@ export default function SimulationBackground({
       {/* Animated Pattern Overlay */}
       {animated && mounted && (
         <>
-          {/* Floating Particles */}
+          {/* Floating Particles - Memoized to prevent memory leaks */}
           <div className="absolute inset-0">
-            {Array.from({ length: 20 }).map((_, i) => (
+            {particles.map((particle, i) => (
               <div
                 key={i}
                 className="absolute rounded-full bg-white opacity-10"
                 style={{
-                  width: Math.random() * 4 + 2 + 'px',
-                  height: Math.random() * 4 + 2 + 'px',
-                  left: Math.random() * 100 + '%',
-                  top: Math.random() * 100 + '%',
-                  animation: `float ${Math.random() * 10 + 10}s linear infinite`,
-                  animationDelay: `${Math.random() * 5}s`,
+                  width: `${particle.width}px`,
+                  height: `${particle.height}px`,
+                  left: `${particle.left}%`,
+                  top: `${particle.top}%`,
+                  animation: `float ${particle.duration}s linear infinite`,
+                  animationDelay: `${particle.delay}s`,
                 }}
               />
             ))}
