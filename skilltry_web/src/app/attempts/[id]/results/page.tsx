@@ -12,6 +12,10 @@ import {
   RefreshCw,
   Loader2,
   ExternalLink,
+  Zap,
+  Star,
+  Award,
+  Flame,
 } from 'lucide-react';
 
 interface PageProps {
@@ -107,6 +111,16 @@ export default async function AttemptResultsPage({ params }: PageProps) {
   const criteriaScores = attempt.criteriaScores as any;
   const recommendations = attempt.recommendations as any[];
   const trainingLinks = attempt.trainingLinks as any[];
+  const metadata = attempt.metadata as any;
+
+  // Get gamification rewards from metadata
+  const xpEarned = attempt.xpEarned || 0;
+  const pointsEarned = attempt.pointsEarned || 0;
+  const leveledUp = metadata?.leveledUp || false;
+  const newLevel = metadata?.newLevel;
+  const achievementsUnlocked = metadata?.achievementsUnlocked || [];
+  const streakUpdated = metadata?.streakUpdated || false;
+  const newStreak = metadata?.newStreak;
 
   // Calculate score color
   const getScoreColor = (score: number) => {
@@ -190,6 +204,98 @@ export default async function AttemptResultsPage({ params }: PageProps) {
             </div>
           </div>
         </div>
+
+        {/* Gamification Rewards */}
+        {(xpEarned > 0 || pointsEarned > 0 || leveledUp || achievementsUnlocked.length > 0) && (
+          <div className="bg-gradient-to-r from-purple-50 to-pink-50 border-2 border-purple-200 rounded-lg p-6 mb-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <Trophy className="w-6 h-6 text-purple-600" />
+              Rewards Earned
+            </h2>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+              {/* XP Earned */}
+              {xpEarned > 0 && (
+                <div className="bg-white rounded-lg p-4 text-center shadow-sm">
+                  <Zap className="w-8 h-8 text-blue-600 mx-auto mb-2" />
+                  <p className="text-3xl font-bold text-blue-600 mb-1">
+                    +{xpEarned}
+                  </p>
+                  <p className="text-sm text-gray-600">Experience Points</p>
+                </div>
+              )}
+
+              {/* Points Earned */}
+              {pointsEarned > 0 && (
+                <div className="bg-white rounded-lg p-4 text-center shadow-sm">
+                  <Trophy className="w-8 h-8 text-yellow-600 mx-auto mb-2" />
+                  <p className="text-3xl font-bold text-yellow-600 mb-1">
+                    +{pointsEarned}
+                  </p>
+                  <p className="text-sm text-gray-600">Points</p>
+                </div>
+              )}
+
+              {/* Level Up */}
+              {leveledUp && newLevel && (
+                <div className="bg-gradient-to-br from-purple-500 to-pink-500 text-white rounded-lg p-4 text-center shadow-lg">
+                  <Star className="w-8 h-8 mx-auto mb-2" />
+                  <p className="text-3xl font-bold mb-1">
+                    Level {newLevel}
+                  </p>
+                  <p className="text-sm">Level Up! 🎉</p>
+                </div>
+              )}
+
+              {/* Streak */}
+              {streakUpdated && newStreak && (
+                <div className="bg-white rounded-lg p-4 text-center shadow-sm">
+                  <Flame className="w-8 h-8 text-orange-600 mx-auto mb-2" />
+                  <p className="text-3xl font-bold text-orange-600 mb-1">
+                    {newStreak}
+                  </p>
+                  <p className="text-sm text-gray-600">Day Streak 🔥</p>
+                </div>
+              )}
+            </div>
+
+            {/* Achievements Unlocked */}
+            {achievementsUnlocked.length > 0 && (
+              <div className="bg-white rounded-lg p-4 shadow-sm">
+                <h3 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
+                  <Award className="w-5 h-5 text-yellow-600" />
+                  Achievements Unlocked ({achievementsUnlocked.length})
+                </h3>
+                <div className="space-y-2">
+                  {achievementsUnlocked.slice(0, 3).map((achievementId: string, index: number) => (
+                    <div
+                      key={index}
+                      className="flex items-center gap-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg"
+                    >
+                      <div className="flex-shrink-0 w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center text-lg">
+                        🏆
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-semibold text-gray-900 text-sm">
+                          New Achievement Unlocked!
+                        </p>
+                        <p className="text-xs text-gray-600">
+                          Check your profile for details
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <Link
+                  href="/profile"
+                  className="mt-3 block text-center text-blue-600 hover:text-blue-700 font-medium text-sm"
+                >
+                  View All Achievements →
+                </Link>
+              </div>
+            )}
+          </div>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
