@@ -861,6 +861,37 @@ ENCRYPTION_KEY="base64_encoded_32_byte_key"
 
 **Files Created:** 14 new files, 2,800+ lines of production code
 
+### Version 1.2.0 (2025-11-11) - Professional UI & Admin Dashboard
+
+**Added:**
+- ✅ Professional landing page with hero section
+- ✅ Feature showcase grid (6 key features)
+- ✅ How It Works section with step-by-step guide
+- ✅ Marketing-ready CTA sections
+- ✅ Professional footer with navigation
+- ✅ Admin dashboard with platform overview
+- ✅ Admin stats cards (users, simulations, attempts, subscriptions)
+- ✅ Quick actions panel for admins
+- ✅ Recent users and simulations lists
+- ✅ Role-based UI rendering
+
+**UI Components:**
+- ✅ Responsive landing page with gradient backgrounds
+- ✅ Feature cards with icons and descriptions
+- ✅ Admin dashboard with comprehensive metrics
+- ✅ Stats visualization cards
+- ✅ Mobile-first responsive design
+- ✅ Hover effects and smooth transitions
+- ✅ Professional color scheme (blue primary)
+
+**Routes Added:**
+- ✅ `/` - Landing page
+- ✅ `/admin` - Admin dashboard (ADMIN role required)
+- ✅ `/dashboard` - User dashboard (authenticated users)
+
+**Total New Features:** 2 major UI pages
+**Lines of Code:** 550+ lines
+
 ### Version 1.0.0 (2025-11-11) - Initial Scaffold
 
 **Added:**
