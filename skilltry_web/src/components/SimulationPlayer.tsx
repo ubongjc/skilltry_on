@@ -364,39 +364,40 @@ export default function SimulationPlayer({
       {/* Immersive Background */}
       <SimulationBackground sector={simulation.sector} animated={true} />
 
-      {/* Header with Progress */}
+      {/* Header with Progress - responsive */}
       <div className="bg-white/95 backdrop-blur-sm border-b sticky top-0 z-10">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-4">
+        <div className="max-w-4xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-3 sm:py-4">
+          <div className="flex items-center justify-between mb-3 sm:mb-4">
+            <div className="flex items-center gap-2 sm:gap-3 md:gap-4 flex-1 min-w-0">
               <button
                 onClick={() => router.push(`/simulations/${simulation.id}`)}
-                className="text-gray-600 hover:text-gray-900 transition"
+                className="text-gray-600 hover:text-gray-900 transition min-w-[44px] min-h-[44px] flex items-center justify-center flex-shrink-0"
                 disabled={submitting}
+                aria-label="Back to simulation"
               >
                 <ArrowLeft className="w-5 h-5" />
               </button>
               {avatar && (
-                <div className="flex-shrink-0">
+                <div className="flex-shrink-0 hidden sm:block">
                   <AvatarDisplay avatar={avatar} size="small" animated />
                 </div>
               )}
               {!avatar && (
-                <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0">
-                  <User className="w-5 h-5 text-gray-400" />
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0 hidden sm:flex">
+                  <User className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
                 </div>
               )}
-              <div>
-                <h1 className="text-lg font-semibold text-gray-900">
+              <div className="min-w-0 flex-1">
+                <h1 className="text-sm sm:text-base md:text-lg font-semibold text-gray-900 truncate">
                   {simulation.title}
                 </h1>
-                <p className="text-sm text-gray-600">
+                <p className="text-xs sm:text-sm text-gray-600">
                   Step {currentStepIndex + 1} of {steps.length}
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-2 text-gray-600">
+            <div className="flex items-center gap-1 sm:gap-2 text-gray-600 flex-shrink-0">
               <Clock className="w-4 h-4" />
               <span className="text-sm font-medium">
                 {formatTime(elapsedTime)}
@@ -564,35 +565,35 @@ export default function SimulationPlayer({
             )}
           </div>
 
-          {/* Navigation Buttons */}
-          <div className="flex items-center justify-between mt-8 pt-6 border-t">
+          {/* Navigation Buttons - responsive */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-0 mt-8 pt-6 border-t">
             <button
               onClick={handlePrevious}
               disabled={currentStepIndex === 0 || submitting}
-              className="px-6 py-3 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              className="px-4 sm:px-6 py-3 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 min-h-[48px]"
             >
               <ArrowLeft className="w-4 h-4" />
-              Previous
+              <span>Previous</span>
             </button>
 
             <button
               onClick={handleNext}
               disabled={submitting || uploading}
-              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              className="px-4 sm:px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 min-h-[48px] order-first sm:order-last"
             >
               {submitting ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  Submitting...
+                  <span>Submitting...</span>
                 </>
               ) : currentStepIndex === steps.length - 1 ? (
                 <>
-                  Submit
+                  <span>Submit</span>
                   <CheckCircle className="w-4 h-4" />
                 </>
               ) : (
                 <>
-                  Next
+                  <span>Next</span>
                   <ArrowRight className="w-4 h-4" />
                 </>
               )}

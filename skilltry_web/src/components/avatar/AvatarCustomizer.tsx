@@ -177,12 +177,12 @@ export default function AvatarCustomizer({
         <div className="bg-white rounded-lg shadow p-6 space-y-6">
           {activeTab === 'appearance' && (
             <>
-              {/* Skin Tone */}
+              {/* Skin Tone - responsive with wrapping */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-3">
                   Skin Tone
                 </label>
-                <div className="flex gap-2">
+                <div className="flex gap-2 flex-wrap">
                   {SKIN_TONES.map((tone) => (
                     <button
                       key={tone.value}
@@ -194,6 +194,7 @@ export default function AvatarCustomizer({
                       }`}
                       style={{ backgroundColor: tone.color }}
                       title={tone.label}
+                      aria-label={`Select ${tone.label} skin tone`}
                     />
                   ))}
                 </div>
@@ -243,12 +244,12 @@ export default function AvatarCustomizer({
                 </div>
               </div>
 
-              {/* Eye Color */}
+              {/* Eye Color - responsive with wrapping */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-3">
                   Eye Color
                 </label>
-                <div className="flex gap-2">
+                <div className="flex gap-2 flex-wrap">
                   {EYE_COLORS.map((color) => (
                     <button
                       key={color.value}
@@ -260,6 +261,7 @@ export default function AvatarCustomizer({
                       }`}
                       style={{ backgroundColor: color.color }}
                       title={color.label}
+                      aria-label={`Select ${color.label} eye color`}
                     />
                   ))}
                 </div>

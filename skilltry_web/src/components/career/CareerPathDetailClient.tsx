@@ -189,10 +189,10 @@ export default function CareerPathDetailClient({
         </div>
       </div>
 
-      {/* Tabs */}
+      {/* Tabs - responsive with proper touch targets */}
       <div className="bg-white border-b sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex gap-1 overflow-x-auto">
+          <div className="flex gap-1 overflow-x-auto scrollbar-hide">
             {[
               { key: 'overview', label: 'Overview', icon: Briefcase },
               { key: 'dayinlife', label: 'A Day in the Life', icon: Clock },
@@ -202,14 +202,14 @@ export default function CareerPathDetailClient({
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key as any)}
-                className={`flex items-center gap-2 px-6 py-4 font-medium border-b-2 transition whitespace-nowrap ${
+                className={`flex items-center gap-2 px-4 sm:px-6 py-3 sm:py-4 font-medium border-b-2 transition whitespace-nowrap min-h-[48px] ${
                   activeTab === tab.key
                     ? 'border-blue-600 text-blue-600'
                     : 'border-transparent text-gray-600 hover:text-gray-900'
                 }`}
               >
-                <tab.icon className="w-4 h-4" />
-                <span>{tab.label}</span>
+                <tab.icon className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span className="text-sm sm:text-base">{tab.label}</span>
               </button>
             ))}
           </div>

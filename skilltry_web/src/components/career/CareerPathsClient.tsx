@@ -100,7 +100,7 @@ export default function CareerPathsClient({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Search and Filters */}
         <div className="mb-8 space-y-4">
-          {/* Search Bar */}
+          {/* Search Bar - minimum 44px touch target */}
           <div className="relative">
             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
             <input
@@ -108,7 +108,7 @@ export default function CareerPathsClient({
               placeholder="Search career paths..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-12 pr-4 py-3 sm:py-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[48px]"
             />
           </div>
 
@@ -178,7 +178,7 @@ export default function CareerPathsClient({
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {filteredPaths.map((path) => {
               const progress = userProgress?.[path.id] || 0;
               const progressPercent = path._count.simulations

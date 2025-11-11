@@ -105,10 +105,11 @@ export default function MainNav() {
               </div>
             )}
 
-            {/* Mobile Menu Button */}
+            {/* Mobile Menu Button - minimum 44x44px touch target */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 text-gray-600 hover:text-gray-900"
+              className="md:hidden p-3 text-gray-600 hover:text-gray-900 min-w-[44px] min-h-[44px] flex items-center justify-center"
+              aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
             >
               {mobileMenuOpen ? (
                 <X className="w-6 h-6" />
@@ -150,14 +151,14 @@ export default function MainNav() {
                   <Link
                     href="/sign-in"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg font-medium"
+                    className="px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg font-medium min-h-[48px] flex items-center"
                   >
                     Sign In
                   </Link>
                   <Link
                     href="/sign-up"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium text-center"
+                    className="px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium text-center min-h-[48px] flex items-center justify-center"
                   >
                     Get Started
                   </Link>

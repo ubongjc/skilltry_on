@@ -97,33 +97,34 @@ export default function ProfileClient({
       {/* Header with Avatar */}
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="flex flex-col md:flex-row items-center gap-8">
-            {/* Avatar */}
+          <div className="flex flex-col md:flex-row items-center gap-4 sm:gap-6 md:gap-8">
+            {/* Avatar - responsive sizing */}
             <div className="relative">
               <div className="bg-white rounded-full p-2">
                 {avatar ? (
                   <AvatarDisplay avatar={avatar} size="large" animated />
                 ) : (
-                  <div className="w-48 h-48 rounded-full bg-gray-200 flex items-center justify-center">
-                    <Edit className="w-12 h-12 text-gray-400" />
+                  <div className="w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 rounded-full bg-gray-200 flex items-center justify-center">
+                    <Edit className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 text-gray-400" />
                   </div>
                 )}
               </div>
               <button
                 onClick={() => setEditingAvatar(true)}
-                className="absolute bottom-2 right-2 p-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition shadow-lg"
+                className="absolute bottom-2 right-2 p-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition shadow-lg min-w-[44px] min-h-[44px] flex items-center justify-center"
+                aria-label="Edit avatar"
               >
                 <Edit className="w-5 h-5" />
               </button>
             </div>
 
-            {/* User Info */}
+            {/* User Info - responsive text */}
             <div className="flex-1 text-center md:text-left">
-              <h1 className="text-4xl font-bold mb-2">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2">
                 {avatar?.displayName || user.name || 'Career Explorer'}
               </h1>
               {avatar?.jobTitle && (
-                <p className="text-xl text-blue-100 mb-4">{avatar.jobTitle}</p>
+                <p className="text-base sm:text-lg md:text-xl text-blue-100 mb-4">{avatar.jobTitle}</p>
               )}
 
               {/* Level Badge */}
@@ -151,8 +152,8 @@ export default function ProfileClient({
               </div>
             </div>
 
-            {/* Quick Stats */}
-            <div className="grid grid-cols-2 gap-4">
+            {/* Quick Stats - responsive grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 w-full sm:w-auto">
               <div className="text-center px-6 py-4 bg-white/10 backdrop-blur-sm rounded-lg">
                 <div className="flex items-center justify-center gap-2 mb-1">
                   <Trophy className="w-5 h-5 text-yellow-300" />

@@ -18,26 +18,26 @@ export default async function Home() {
             <p className="max-w-2xl mx-auto text-xl sm:text-2xl text-gray-600 mb-10">
               Practice real job scenarios, get instant AI-powered feedback, and advance your career with personalized training recommendations.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-stretch sm:items-center w-full sm:w-auto max-w-md sm:max-w-none">
               {userId ? (
                 <Link
                   href="/dashboard"
-                  className="px-8 py-4 bg-blue-600 text-white rounded-lg text-lg font-semibold hover:bg-blue-700 transition shadow-lg flex items-center gap-2"
+                  className="px-6 sm:px-8 py-3 sm:py-4 bg-blue-600 text-white rounded-lg text-base sm:text-lg font-semibold hover:bg-blue-700 transition shadow-lg flex items-center justify-center gap-2 min-h-[48px]"
                 >
-                  Go to Dashboard
+                  <span>Go to Dashboard</span>
                   <ArrowRight className="w-5 h-5" />
                 </Link>
               ) : (
                 <>
                   <Link
                     href="/sign-up"
-                    className="px-8 py-4 bg-blue-600 text-white rounded-lg text-lg font-semibold hover:bg-blue-700 transition shadow-lg"
+                    className="px-6 sm:px-8 py-3 sm:py-4 bg-blue-600 text-white rounded-lg text-base sm:text-lg font-semibold hover:bg-blue-700 transition shadow-lg min-h-[48px] flex items-center justify-center"
                   >
                     Get Started Free
                   </Link>
                   <Link
                     href="/sign-in"
-                    className="px-8 py-4 bg-white text-blue-600 border-2 border-blue-600 rounded-lg text-lg font-semibold hover:bg-blue-50 transition"
+                    className="px-6 sm:px-8 py-3 sm:py-4 bg-white text-blue-600 border-2 border-blue-600 rounded-lg text-base sm:text-lg font-semibold hover:bg-blue-50 transition min-h-[48px] flex items-center justify-center"
                   >
                     Sign In
                   </Link>
