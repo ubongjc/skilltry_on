@@ -23,21 +23,26 @@ export default async function SimulationPlayPage({ params }: PageProps) {
     redirect(`/simulations/${id}?error=limit_reached`);
   }
 
-  // Load simulation
-  const simulation = await prisma.simulation.findUnique({
-    where: { id, isPublished: true },
-    select: {
-      id: true,
-      title: true,
-      description: true,
-      sector: true,
-      difficulty: true,
-      estimatedDuration: true,
-      steps: true,
-      rubric: true,
-      resources: true,
-    },
-  });
+  // Load simulation and user avatar
+  const [simulation, avatar] = await Promise.all([
+    prisma.simulation.findUnique({
+      where: { id, isPublished: true },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        sector: true,
+        difficulty: true,
+        estimatedDuration: true,
+        steps: true,
+        rubric: true,
+        resources: true,
+      },
+    }),
+    prisma.avatar.findUnique({
+      where: { userId: user.id },
+    }),
+  ]);
 
   if (!simulation) {
     notFound();
@@ -60,6 +65,7 @@ export default async function SimulationPlayPage({ params }: PageProps) {
       simulation={simulation}
       attemptId={attempt.id}
       userId={user.id}
+      avatar={avatar}
     />
   );
 }

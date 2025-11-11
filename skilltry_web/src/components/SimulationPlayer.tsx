@@ -10,8 +10,11 @@ import {
   CheckCircle,
   AlertCircle,
   Loader2,
+  User,
 } from 'lucide-react';
 import { encryptFile } from '@/lib/client-encryption';
+import SimulationBackground from '@/components/simulation/SimulationBackground';
+import AvatarDisplay from '@/components/avatar/AvatarDisplay';
 
 interface Step {
   id: string;
@@ -36,6 +39,7 @@ interface SimulationPlayerProps {
   };
   attemptId: string;
   userId: string;
+  avatar: any;
 }
 
 interface Response {
@@ -49,6 +53,7 @@ export default function SimulationPlayer({
   simulation,
   attemptId,
   userId,
+  avatar,
 }: SimulationPlayerProps) {
   const router = useRouter();
   const steps = simulation.steps as Step[];
@@ -331,9 +336,12 @@ export default function SimulationPlayer({
   const progress = ((currentStepIndex + 1) / steps.length) * 100;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 relative">
+      {/* Immersive Background */}
+      <SimulationBackground sector={simulation.sector} animated={true} />
+
       {/* Header with Progress */}
-      <div className="bg-white border-b sticky top-0 z-10">
+      <div className="bg-white/95 backdrop-blur-sm border-b sticky top-0 z-10">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-4">
@@ -344,6 +352,16 @@ export default function SimulationPlayer({
               >
                 <ArrowLeft className="w-5 h-5" />
               </button>
+              {avatar && (
+                <div className="flex-shrink-0">
+                  <AvatarDisplay avatar={avatar} size="small" animated />
+                </div>
+              )}
+              {!avatar && (
+                <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0">
+                  <User className="w-5 h-5 text-gray-400" />
+                </div>
+              )}
               <div>
                 <h1 className="text-lg font-semibold text-gray-900">
                   {simulation.title}
@@ -373,8 +391,8 @@ export default function SimulationPlayer({
       </div>
 
       {/* Main Content */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white rounded-lg shadow-lg p-8">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-0">
+        <div className="bg-white/95 backdrop-blur-sm rounded-lg shadow-lg p-8">
           {/* Step Title */}
           <div className="mb-6">
             <h2 className="text-2xl font-bold text-gray-900 mb-2">
