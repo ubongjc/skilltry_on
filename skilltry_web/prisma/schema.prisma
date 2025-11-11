@@ -19,11 +19,28 @@ model User {
   name          String?
   role          Role      @default(USER)
 
+  // Gamification
+  level         Int       @default(1)
+  xp            Int       @default(0)
+  totalPoints   Int       @default(0)
+  currentStreak Int       @default(0)
+  longestStreak Int       @default(0)
+  lastActiveDate DateTime?
+
   // WebAuthn/Passkey credentials
   credentials   Credential[]
 
   // User attempts and reports
   attempts      Attempt[]
+
+  // Avatar
+  avatar        Avatar?
+
+  // Achievements
+  userAchievements UserAchievement[]
+
+  // Clerk ID for integration
+  clerkId       String?   @unique
 
   // Metadata
   createdAt     DateTime  @default(now())
@@ -35,6 +52,7 @@ model User {
 
   @@index([email])
   @@index([role])
+  @@index([level])
   @@map("users")
 }
 
@@ -111,14 +129,14 @@ model Attempt {
   simulationId    String
   simulation      Simulation @relation(fields: [simulationId], references: [id], onDelete: Cascade)
 
-  // Rubric scores as JSON
-  rubricScores    Json
-
-  // Overall score (0-100)
-  overallScore    Float
+  // Scoring
+  score           Float?
+  criteriaScores  Json?
 
   // AI-generated feedback
   feedback        String?
+  recommendations Json?
+  trainingLinks   Json?
 
   // User responses/actions
   responses       Json
@@ -126,13 +144,21 @@ model Attempt {
   // Client-side encrypted media (ciphertext URLs)
   encryptedMedia  String[]
 
+  // Gamification
+  xpEarned        Int      @default(0)
+  pointsEarned    Int      @default(0)
+
   // Completion status
   status          AttemptStatus @default(IN_PROGRESS)
   startedAt       DateTime      @default(now())
   completedAt     DateTime?
+  evaluatedAt     DateTime?
 
   // Time taken in seconds
-  duration        Int?
+  timeSpent       Int      @default(0)
+
+  // Metadata for progress saving
+  metadata        Json?
 
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
@@ -145,7 +171,9 @@ model Attempt {
 
 enum AttemptStatus {
   IN_PROGRESS
+  EVALUATING
   COMPLETED
+  FAILED
   ABANDONED
 }
 
@@ -236,4 +264,192 @@ enum DSRStatus {
   PROCESSING
   COMPLETED
   FAILED
+}
+
+// Avatar customization
+model Avatar {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Avatar appearance
+  skinTone        String   @default("neutral")
+  hairStyle       String   @default("short")
+  hairColor       String   @default("brown")
+  eyeColor        String   @default("brown")
+  outfit          String   @default("casual")
+  accessories     String[] @default([])
+
+  // Custom name/title
+  displayName     String?
+  jobTitle        String?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("avatars")
+}
+
+// Achievement definitions
+model Achievement {
+  id              String   @id @default(cuid())
+
+  // Achievement details
+  name            String
+  description     String
+  category        AchievementCategory
+
+  // Requirements
+  requiredCount   Int      @default(1)
+  requiredValue   Int?
+
+  // Rewards
+  xpReward        Int      @default(0)
+  pointsReward    Int      @default(0)
+  badgeId         String?
+
+  // Icon/Visual
+  icon            String?
+  color           String   @default("blue")
+
+  // Metadata
+  isSecret        Boolean  @default(false)
+  isActive        Boolean  @default(true)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  userAchievements UserAchievement[]
+
+  @@index([category])
+  @@index([isActive])
+  @@map("achievements")
+}
+
+enum AchievementCategory {
+  COMPLETION    // Complete simulations
+  MASTERY       // High scores
+  CONSISTENCY   // Streaks, daily activity
+  SOCIAL        // Leaderboard, sharing
+  EXPLORATION   // Try different sectors
+  SPEED         // Complete quickly
+  DEDICATION    // Total time, attempts
+}
+
+// User-Achievement relationship (earned achievements)
+model UserAchievement {
+  id              String   @id @default(cuid())
+
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  achievementId   String
+  achievement     Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+
+  // Progress tracking
+  progress        Int      @default(0)
+  isCompleted     Boolean  @default(false)
+  completedAt     DateTime?
+
+  // Notification
+  isViewed        Boolean  @default(false)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([userId, achievementId])
+  @@index([userId])
+  @@index([achievementId])
+  @@index([isCompleted])
+  @@map("user_achievements")
+}
+
+// Career paths for immersive experiences
+model CareerPath {
+  id              String   @id @default(cuid())
+
+  // Career details
+  title           String
+  description     String
+  sector          String
+
+  // Experience overview
+  dayInLife       Json     // Narrative structure
+  scenarios       Json     // Interactive scenarios
+
+  // Visual assets
+  thumbnailUrl    String?
+  backgroundUrl   String?
+  characterAssets Json?    // Avatar overlays, props
+
+  // Difficulty
+  difficulty      String   @default("MEDIUM")
+  estimatedTime   Int      @default(30) // minutes
+
+  // Requirements
+  requiredLevel   Int      @default(1)
+  prerequisites   String[] @default([])
+
+  // Rewards
+  xpReward        Int      @default(100)
+  pointsReward    Int      @default(50)
+
+  // Metadata
+  isPublished     Boolean  @default(false)
+  playCount       Int      @default(0)
+  averageRating   Float?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([sector])
+  @@index([isPublished])
+  @@map("career_paths")
+}
+
+// Leaderboard entries
+model LeaderboardEntry {
+  id              String   @id @default(cuid())
+
+  userId          String
+  userName        String
+  userAvatar      Json?    // Snapshot of avatar
+
+  // Leaderboard type
+  type            LeaderboardType
+  period          LeaderboardPeriod
+
+  // Score/rank
+  score           Int
+  rank            Int?
+
+  // Metadata
+  metadata        Json?
+
+  // Date for period calculations
+  periodStart     DateTime
+  periodEnd       DateTime
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([type, period, periodStart])
+  @@index([userId])
+  @@map("leaderboard_entries")
+}
+
+enum LeaderboardType {
+  TOTAL_XP
+  TOTAL_POINTS
+  SIMULATION_COUNT
+  AVERAGE_SCORE
+  STREAK
+}
+
+enum LeaderboardPeriod {
+  ALL_TIME
+  MONTHLY
+  WEEKLY
+  DAILY
 }
