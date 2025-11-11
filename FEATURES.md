@@ -1,7 +1,7 @@
 # SkillTry-On Features Documentation
 
 **Last Updated:** 2025-11-11
-**Version:** 1.0.0
+**Version:** 1.3.0
 **Branch:** claude/skilltry-initial-scaffold-011CV2HoYPxY8pvaP64Hz85j
 
 ---
@@ -183,7 +183,70 @@ SkillTry-On is a comprehensive job simulation platform that provides realistic 5
   - Terms of service acceptance
   - Privacy policy acknowledgment
 
-### 2. API Endpoints
+### 2. Simulation User Journey
+
+#### Browse Simulations (`/simulations`)
+- **Location:** `skilltry_web/src/app/simulations/page.tsx`
+- **Features:**
+  - Grid view of all published simulations
+  - Search by title and description
+  - Filter by sector (dynamic from database)
+  - Filter by difficulty (EASY, MEDIUM, HARD)
+  - Responsive grid layout (1-3 columns)
+  - Empty state with helpful message
+  - Server-side rendering with Next.js 15
+
+#### Simulation Detail (`/simulations/[id]`)
+- **Location:** `skilltry_web/src/app/simulations/[id]/page.tsx`
+- **Features:**
+  - Hero section with simulation metadata
+  - Key stats: duration, steps, attempts count
+  - "What You'll Practice" preview (first 3 steps)
+  - Evaluation criteria breakdown
+  - Training resources sidebar
+  - Tips for success
+  - Conditional start button based on:
+    - Authentication status
+    - Subscription limits
+  - Sign-in redirect for unauthenticated users
+  - Upgrade prompt when limit reached
+
+#### Simulation Player (`/simulations/[id]/play`)
+- **Location:** `skilltry_web/src/app/simulations/[id]/play/page.tsx`
+- **Component:** `skilltry_web/src/components/SimulationPlayer.tsx`
+- **Features:**
+  - Step-by-step navigation with progress bar
+  - Real-time timer tracking
+  - Auto-save progress every 30 seconds
+  - Multiple question types:
+    - **Text Response:** Textarea for written answers
+    - **Multiple Choice:** Radio button selection
+    - **File Upload:** Drag-and-drop or browse
+    - **Combined:** Mix of types in single step
+  - Client-side encryption for media uploads
+  - File validation (type, size)
+  - Previous/Next navigation with validation
+  - Submit button on final step
+  - Loading states and error handling
+  - Responsive on all devices
+  - Sticky header with progress
+
+#### Results Page (`/attempts/[id]/results`)
+- **Location:** `skilltry_web/src/app/attempts/[id]/results/page.tsx`
+- **Features:**
+  - Overall score with colored gradient
+  - Time spent, difficulty, sector display
+  - Detailed AI-generated feedback
+  - Performance breakdown by criteria
+  - Animated progress bars
+  - Areas for improvement
+  - Recommended training links
+  - Share achievement functionality
+  - Quick actions (retry, browse, dashboard)
+  - Loading state during AI evaluation
+  - Error handling for failed evaluations
+
+### 3. API Endpoints
 
 #### Health Check
 - **Endpoint:** `GET /api/health`
@@ -321,7 +384,7 @@ SkillTry-On is a comprehensive job simulation platform that provides realistic 5
 }
 ```
 
-### 3. Database Schema
+### 4. Database Schema
 
 **Location:** `skilltry_web/prisma/schema.prisma`
 
@@ -790,22 +853,66 @@ ENCRYPTION_KEY="base64_encoded_32_byte_key"
 10. ✅ Subscription management system
 
 #### To Be Implemented:
-1. ❌ Complete simulation engine with branching logic UI
-2. ❌ Admin dashboard UI
-3. ❌ Email notification system
-4. ❌ iOS Xcode project file (needs manual creation in Xcode)
-5. ❌ Web Crypto API implementation for client-side encryption
-6. ❌ Comprehensive error boundaries
-7. ❌ PWA manifest and service worker
-8. ❌ iOS StoreKit integration
-9. ❌ Analytics implementation
-10. ❌ Advanced search functionality
-11. ❌ Notification system
-12. ❌ Complete simulation player component
+1. ❌ Email notification system
+2. ❌ iOS Xcode project file (needs manual creation in Xcode)
+3. ❌ Comprehensive error boundaries
+4. ❌ PWA manifest and service worker
+5. ❌ iOS StoreKit integration
+6. ❌ Analytics dashboard
+7. ❌ Advanced search functionality
+8. ❌ Notification system
+9. ❌ Admin simulation builder UI
+10. ❌ Bulk user management for institutions
 
 ---
 
 ## 📝 Changelog
+
+### Version 1.3.0 (2025-11-11) - Complete Simulation Player & User Journey
+
+**Added:**
+- ✅ Simulation browsing page with search and filtering
+- ✅ Simulation detail page with comprehensive information
+- ✅ Interactive simulation player with step-by-step navigation
+- ✅ Client-side encryption utilities using Web Crypto API
+- ✅ Auto-save progress functionality (every 30 seconds)
+- ✅ Multiple question type support (text, multiple choice, file upload)
+- ✅ Real-time timer and progress tracking
+- ✅ Media upload with client-side encryption
+- ✅ AI feedback generation on submission
+- ✅ Results page with detailed score breakdown
+- ✅ Training resource recommendations
+- ✅ Subscription-aware access control
+
+**UI Components:**
+- ✅ SimulationPlayer component with rich interactions
+- ✅ Progress bar with visual feedback
+- ✅ File upload with drag-and-drop support
+- ✅ Loading states and error handling
+- ✅ Responsive design for all device sizes
+- ✅ Performance breakdown with animated progress bars
+- ✅ Share achievement functionality
+
+**Routes Added:**
+- ✅ `/simulations` - Browse all simulations with search/filters
+- ✅ `/simulations/[id]` - Simulation detail with start capability
+- ✅ `/simulations/[id]/play` - Interactive player
+- ✅ `/attempts/[id]/results` - Detailed results with AI feedback
+
+**API Endpoints Added:**
+- ✅ `POST /api/attempts/progress` - Save progress during simulation
+- ✅ `POST /api/attempts/[id]/submit` - Submit for AI evaluation
+- ✅ `GET /api/attempts/[id]/submit` - Check evaluation status
+
+**Libraries & Utilities:**
+- ✅ `/lib/client-encryption.ts` - Web Crypto API encryption utilities
+- ✅ AES-GCM-256 encryption for files and text
+- ✅ Key generation and management
+- ✅ Secure random string generation
+
+**Total New Features:** Complete end-to-end simulation flow
+**Lines of Code:** 2,000+ lines
+**Files Created:** 8 new files
 
 ### Version 1.1.0 (2025-11-11) - Production Core Features
 
