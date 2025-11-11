@@ -3,6 +3,13 @@ import { requireAuth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { generateFeedback } from '@/lib/ai-feedback';
 import { incrementUsage } from '@/lib/stripe';
+import {
+  calculateXPEarned,
+  calculatePointsEarned,
+  awardRewards,
+  updateStreak,
+  checkAchievements,
+} from '@/lib/gamification';
 import { z } from 'zod';
 
 const SubmitSchema = z.object({
@@ -123,6 +130,26 @@ async function generateFeedbackAsync(
   responses: any[]
 ) {
   try {
+    // Get attempt with user info
+    const attempt = await prisma.attempt.findUnique({
+      where: { id: attemptId },
+      include: {
+        user: {
+          select: { id: true },
+        },
+        simulation: {
+          select: {
+            difficulty: true,
+            estimatedDuration: true,
+          },
+        },
+      },
+    });
+
+    if (!attempt) {
+      throw new Error('Attempt not found');
+    }
+
     // Generate AI feedback
     const feedback = await generateFeedback(
       simulation.steps,
@@ -130,7 +157,63 @@ async function generateFeedbackAsync(
       responses
     );
 
-    // Update attempt with feedback
+    // Check if this is user's first attempt at this simulation
+    const previousAttempts = await prisma.attempt.count({
+      where: {
+        userId: attempt.userId,
+        simulationId: attempt.simulationId,
+        status: 'COMPLETED',
+      },
+    });
+    const isFirstAttempt = previousAttempts === 0;
+
+    // Calculate gamification rewards
+    const xpEarned = calculateXPEarned({
+      score: feedback.overallScore,
+      difficulty: attempt.simulation.difficulty,
+      timeSpent: attempt.timeSpent,
+      estimatedDuration: attempt.simulation.estimatedDuration,
+      isFirstAttempt,
+    });
+
+    const pointsEarned = calculatePointsEarned({
+      score: feedback.overallScore,
+      difficulty: attempt.simulation.difficulty,
+      criteriaScores: feedback.criteriaScores,
+    });
+
+    // Award XP and points
+    const rewardResult = await awardRewards(
+      attempt.userId,
+      xpEarned,
+      pointsEarned
+    );
+
+    // Update streak
+    const streakResult = await updateStreak(attempt.userId);
+
+    // Check for completed achievements
+    const completedAchievements = await Promise.all([
+      checkAchievements(attempt.userId, {
+        type: 'simulation_completed',
+      }),
+      checkAchievements(attempt.userId, {
+        type: 'high_score',
+        value: feedback.overallScore,
+      }),
+      streakResult.streakMaintained
+        ? checkAchievements(attempt.userId, {
+            type: 'streak_updated',
+          })
+        : Promise.resolve([]),
+      checkAchievements(attempt.userId, {
+        type: 'sector_explored',
+      }),
+    ]);
+
+    const allCompletedAchievements = completedAchievements.flat();
+
+    // Update attempt with feedback and rewards
     await prisma.attempt.update({
       where: { id: attemptId },
       data: {
@@ -139,12 +222,30 @@ async function generateFeedbackAsync(
         criteriaScores: feedback.criteriaScores,
         recommendations: feedback.recommendations,
         trainingLinks: feedback.trainingLinks,
+        xpEarned,
+        pointsEarned,
         status: 'COMPLETED',
         evaluatedAt: new Date(),
+        metadata: {
+          leveledUp: rewardResult.leveledUp,
+          newLevel: rewardResult.newLevel,
+          streakUpdated: streakResult.streakMaintained,
+          newStreak: streakResult.currentStreak,
+          achievementsUnlocked: allCompletedAchievements,
+        },
       },
     });
 
     console.log(`Feedback generated for attempt ${attemptId}`);
+    console.log(`Rewards: +${xpEarned} XP, +${pointsEarned} points`);
+    if (rewardResult.leveledUp) {
+      console.log(`🎉 User leveled up to Level ${rewardResult.newLevel}!`);
+    }
+    if (allCompletedAchievements.length > 0) {
+      console.log(
+        `🏆 Unlocked ${allCompletedAchievements.length} achievements!`
+      );
+    }
   } catch (error) {
     console.error('Feedback generation error:', error);
 
