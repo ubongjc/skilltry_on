@@ -10,6 +10,7 @@ import {
   User,
   Menu,
   X,
+  Briefcase,
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -28,6 +29,7 @@ export default function MainNav() {
 
   const navLinks = [
     { href: '/dashboard', label: 'Dashboard', icon: Home, auth: true },
+    { href: '/career-paths', label: 'Career Paths', icon: Briefcase, auth: false },
     { href: '/simulations', label: 'Simulations', icon: Target, auth: false },
     { href: '/leaderboard', label: 'Leaderboard', icon: Trophy, auth: false },
     { href: '/profile', label: 'Profile', icon: User, auth: true },
